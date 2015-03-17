@@ -48,10 +48,10 @@ function Set-TargetResource
   $kibanaServiceName = "KibanaNSSM"
 
   #Find the Bat file the runs kibana
-  $serviceBatLoction = Get-ChildItem -Path $KibanaUnpacked -Filter kibana.bat -Recurse | Select -first 1
+  $serviceBatLoction = Get-ChildItem -Path $UnzipFolder -Filter kibana.bat -Recurse | Select -first 1
 
   #Get the non-sucky-service-manager exe
-  $nssmExeLoction = Get-ChildItem -Path $NssmUnpacked -Filter nssm.exe -Recurse | ?{ $_.Directory.Name-eq "win64"}
+  $nssmExeLoction = Get-ChildItem -Path $NssmUnzipFolder -Filter nssm.exe -Recurse | ?{ $_.Directory.Name-eq "win64"}
 
   if ($nssmExeLoction.Count -ne 1)
   {
@@ -63,7 +63,7 @@ function Set-TargetResource
   if ($serviceObject)
   {
     #Remove if we are
-    $logRemoveFilePath = Join-Path $KibanaUnpacked "RemoveLog.txt"
+    $logRemoveFilePath = Join-Path $UnzipFolder "RemoveLog.txt"
     $removeArgs = "remove $kibanaServiceName confirm"
     Start-Process $nssmExeLoction.FullName $removeArgs -RedirectStandardOutput $logRemoveFilePath -Wait
 
@@ -74,7 +74,7 @@ function Set-TargetResource
 
 
   #Create a service, using nssm, to host kibana
-  $logFilePath = Join-Path $KibanaUnpacked "InstallLog.txt"
+  $logFilePath = Join-Path $UnzipFolder "InstallLog.txt"
   $installArgs = "install $kibanaServiceName $($serviceBatLoction.FullName)"
   Start-Process $nssmExeLoction.FullName $installArgs -RedirectStandardOutput $logFilePath -Wait
 

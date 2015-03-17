@@ -1,5 +1,9 @@
 configuration TestConfig
 {
+    #####
+    #Configure locations for downloads and installs of JRE, Elasticsearch, NSSM and Kibana
+    #####
+
     $installRoot = 'c:\elkInstall\'
     $downloadroot = 'c:\elkTempDownload\'
 
@@ -21,15 +25,13 @@ configuration TestConfig
     $nssmUnpackLocation = Join-Path $installRoot 'nssmkibana'
     $nssmDownloadUri = 'https://nssm.cc/release/nssm-2.24.zip'
 
-    $7zipUnpackLocations = Join-Path $downloadroot '7zip.zip'
-
     Import-DscResource -Module xPSDesiredStateConfiguration
     Import-DscResource -Module cElasticsearch
     node ("localhost")
     {
         LocalConfigurationManager
         {
-            DebugMode = 'All'
+            DebugMode = 'ForceModuleImport'
         }
 
         #####
@@ -41,12 +43,14 @@ configuration TestConfig
             DestinationPath = $javaZipLocation
             Uri = $javaDownloadUri
             UserAgent = "DSCScript"
+            
         }
 
         c7zip JREUnzip
         {
             DependsOn = "[xRemoteFile]JREDownload"
             ZipFileLocation = $javaZipLocation
+            #ZipFileLocation = $nssmZipLocation
             UnzipFolder = $javaUnpackLocation
         }
 
@@ -93,6 +97,7 @@ configuration TestConfig
             DestinationPath = $nssmZipLocation
             Uri = $nssmDownloadUri
             UserAgent = 'DSC Script'
+            DependsOn = "[cElasticsearch]ElasticInstall"
         }
 
 
@@ -108,6 +113,7 @@ configuration TestConfig
             DestinationPath = $kibanaZipLocation
             Uri = $kibanaDownloadUri
             UserAgent = "DSCScript"
+            DependsOn = "[cElasticsearch]ElasticInstall"
         }
 
         c7zip KibanaUnzip

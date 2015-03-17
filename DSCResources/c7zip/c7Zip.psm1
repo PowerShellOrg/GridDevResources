@@ -44,6 +44,7 @@ function Set-TargetResource
     $UnzipFolder
   )
   Write-Verbose "Start Set-TargetResource"
+  Write-Verbose "Unzipping $ZipFileLocation to $UnzipFolder"
 
   Unzip $ZipFileLocation $UnzipFolder
 }
@@ -68,14 +69,15 @@ function Test-TargetResource
 
   if (-not (Test-Path $ZipFileLocation))
   {
-    throw "Zip file not present, check file path for ZipFileLocation parameter"
+    throw "Zip file $ZipFileLocation not present, check file path for ZipFileLocation parameter"
   }
 
   if (-not (Test-Path $UnzipFolder))
   {
-    Write-Verbose "Unzip Location not present suggesting not unzipped, Test returning false"
+    Write-Verbose "Unzip Location $UnzipFolder not present suggesting not unzipped, Test returning false"
     Return $false
   }
+  Write-Verbose "Unzip Location present $UnzipFolder, returning true"
 
   Return $true
 }
@@ -90,7 +92,7 @@ Function Unzip($path,$to)
     push-location $7z
     try
     {
-      Write-Verbose "Downloading 7zip" -foregroundcolor cyan
+      Write-Verbose "Downloading 7zip"
       $wc = new-object system.net.webClient
       $wc.headers.add('user-agent', [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox)
       $wc.downloadFile("http://softlayer-dal.dl.sourceforge.net/project/sevenzip/7-Zip/9.20/7za920.zip","$7z\7z.zip")
@@ -99,6 +101,7 @@ Function Unzip($path,$to)
       [io.compression.zipfile]::extracttodirectory("$7z\7z.zip","$7z")
       del .\7z.zip
     }
+    catch { throw "Failed to download 7zip to temp location, aborting"}
     finally { pop-location }
   }
 
@@ -110,11 +113,19 @@ Function Unzip($path,$to)
     #Pipe output of gz unzip and unzip remaining tar files.
     $cmdline = "cmd"
     $arguments = "/C `"^`"$7z\7za.exe^`" x ^`"$path^`" -so | ^`"$7z\7za.exe^`" x -y -si -ttar -o^`"$to^`""
-    start-process $cmdline $arguments -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    $proc = start-process $cmdline $arguments -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    if ($proc.ExitCode -ne 0)
+    {
+      throw "Error when unzipping with 7zip"
+    }
   }
   else
   {
-    start-process "$7z\7za.exe" "x $path -y -o$to" -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    $proc = start-process "$7z\7za.exe" "x $path -y -o$to" -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    if ($proc.ExitCode -ne 0)
+    {
+      throw "Error when unzipping with 7zip"
+    }
   }
 }
 
