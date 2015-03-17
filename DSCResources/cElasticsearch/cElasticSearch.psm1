@@ -61,6 +61,9 @@ function Set-TargetResource
     throw "Service failed to install correctly"
   }
 
+  #Get service
+  $serviceObject = get-service | ?{$_.Name -like "*Elasticsearch*"}
+
   #Set it up to start automatically and Start it, if needed
   if ($serviceObject.Status -eq "Stopped")
   {
