@@ -84,7 +84,7 @@ function Test-TargetResource
 
   Write-Verbose "Start Test-TargetResource"
 
-  if (IsElasticsearchServiceInstalled)
+  if (-not (IsElasticsearchServiceInstalled))
   {
     Write-Verbose "Service not present on machine"
     Return $false
