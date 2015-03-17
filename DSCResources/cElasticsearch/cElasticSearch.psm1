@@ -35,7 +35,7 @@ function Set-TargetResource
 
   Write-Verbose "Start Set-TargetResource"
 
-  serviceBatLoction = Get-ChildItem -Path $UnzipFolder -Filter service.bat -Recurse
+  $serviceBatLoction = Get-ChildItem -Path $UnzipFolder -Filter service.bat -Recurse
   if ($serviceBatLoction.Count -ne 1)
   {
     throw "Failed to find service install bat file Elasticsearch has likely changed its install method"
