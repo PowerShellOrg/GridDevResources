@@ -109,6 +109,12 @@ Function IsElasticsearchServiceInstalled
   {
     Write-Verbose "Service Present on machine (may have already been installed)"
     Write-Verbose "$($serviceObject | Format-List | Out-String)"
+
+    #Check if we need to start it again
+    if ($serviceObject.Status -eq "Stopped")
+    {
+      $serviceObject.Start()
+    }
   }
 
   return $true

@@ -62,6 +62,9 @@ function Set-TargetResource
   $serviceObject = get-service | ?{$_.Name -like "*$kibanaServiceName*"}
   if ($serviceObject)
   {
+    #Stop the currently installed service
+    $serviceObject.Stop()
+
     #Remove if we are
     $logRemoveFilePath = Join-Path $UnzipFolder "RemoveLog.txt"
     $removeArgs = "remove $kibanaServiceName confirm"
@@ -128,6 +131,17 @@ function Test-TargetResource
   {
     Write-Verbose "Service not present on machine"
     Return $false
+  }
+  else
+  {
+    Write-Verbose "Service Present on machine (may have already been installed)"
+    Write-Verbose "$($serviceObject | Format-List | Out-String)"
+
+    #Check if we need to start it again
+    if ($serviceObject.Status -eq "Stopped")
+    {
+      $serviceObject.Start()
+    }
   }
 
   Return $true
