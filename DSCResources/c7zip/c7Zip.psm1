@@ -7,7 +7,7 @@ function Get-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $ZipFileLocation
+    $ZipFileLocation,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
@@ -22,8 +22,8 @@ function Get-TargetResource
   #Needs to return a hashtable that returns the current
   #status of the configuration component
   $Configuration = @{
-    UnzipFolder = $UnzipFolder,
-    ZipFileLocation = $ZipFileLocation,
+    UnzipFolder = $UnzipFolder
+    ZipFileLocation = $ZipFileLocation
   }
 
   return $Configuration
@@ -37,7 +37,7 @@ function Set-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $ZipFileLocation
+    $ZipFileLocation,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
@@ -57,7 +57,7 @@ function Test-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $ZipFileLocation
+    $ZipFileLocation,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]

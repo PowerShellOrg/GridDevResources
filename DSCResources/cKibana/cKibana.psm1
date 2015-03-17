@@ -7,7 +7,7 @@ function Get-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder
+    $UnzipFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
@@ -20,7 +20,7 @@ function Get-TargetResource
   #Needs to return a hashtable that returns the current
   #status of the configuration component
   $Configuration = @{
-    UnzipFolder = $UnzipFolder,
+    UnzipFolder = $UnzipFolder
     NssmUnzipFolder = $NssmUnzipFolder
   }
 
@@ -35,7 +35,7 @@ function Set-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder
+    $UnzipFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
@@ -113,7 +113,7 @@ function Test-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder
+    $UnzipFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]

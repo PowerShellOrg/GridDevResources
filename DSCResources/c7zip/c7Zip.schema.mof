@@ -2,5 +2,5 @@
 class c7zip : OMI_BaseResource
 {
   [Key] string ZipFileLocation;
-  [required] string ZipFileLocation;
+  [required] string UnzipFolder;
 };
