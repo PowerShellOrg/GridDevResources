@@ -113,7 +113,7 @@ Function Unzip($path,$to)
     #Pipe output of gz unzip and unzip remaining tar files.
     $cmdline = "cmd"
     $arguments = "/C `"^`"$7z\7za.exe^`" x ^`"$path^`" -so | ^`"$7z\7za.exe^`" x -y -si -ttar -o^`"$to^`""
-    $proc = start-process $cmdline $arguments -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    $proc = start-process $cmdline $arguments -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait -PassThru
     if ($proc.ExitCode -ne 0)
     {
       throw "Error when unzipping with 7zip"
@@ -121,7 +121,7 @@ Function Unzip($path,$to)
   }
   else
   {
-    $proc = start-process "$7z\7za.exe" "x $path -y -o$to" -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait
+    $proc = start-process "$7z\7za.exe" "x $path -y -o$to" -RedirectStandardOutput $logFilePath -LoadUserProfile -Wait -PassThru
     if ($proc.ExitCode -ne 0)
     {
       throw "Error when unzipping with 7zip"
