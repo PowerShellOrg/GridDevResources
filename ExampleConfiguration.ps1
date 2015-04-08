@@ -37,7 +37,7 @@ configuration TestConfig
         #####
         #Downlaod and set env variable for JRE
         #####
-
+  
         xRemoteFile JREDownload
         {
             DestinationPath = $javaZipLocation
@@ -45,7 +45,7 @@ configuration TestConfig
             UserAgent = "DSCScript"
             
         }
-
+  
         c7zip JREUnzip
         {
             DependsOn = "[xRemoteFile]JREDownload"
@@ -53,7 +53,7 @@ configuration TestConfig
             #ZipFileLocation = $nssmZipLocation
             UnzipFolder = $javaUnpackLocation
         }
-
+  
         Environment SetJREEnviromentVar
         {
             Name = "JAVA_HOME"
@@ -62,36 +62,36 @@ configuration TestConfig
             Value = $javaFolder
             DependsOn = "[c7zip]JREUnzip"
         }
-
+  
         #####
         #Download and install elasticsearch
         #####
-
+  
         xRemoteFile ElasticDownloadZip
         {
             DestinationPath = $elasticZipLocation
             Uri = $elasticDownloadUri
             UserAgent = "DSCScript"
         }
-
+  
         c7zip ElasticUnzip
         {
             DependsOn = "[xRemoteFile]ElasticDownloadZip"
             ZipFileLocation = $elasticZipLocation
             UnzipFolder = $elasticUnpacked
         }
-
+  
         cElasticsearch ElasticInstall
         {
             DependsOn = @('[Environment]SetJREEnviromentVar', '[c7zip]ElasticUnzip')
             UnzipFolder = $elasticUnpacked
         }
-
+  
         
         #####
         #Downlaod and Install Kibana, using nssm to host as windows service
         #####
-
+  
         xRemoteFile NSSMDownloadZip
         {
             DestinationPath = $nssmZipLocation
@@ -99,15 +99,15 @@ configuration TestConfig
             UserAgent = 'DSC Script'
             DependsOn = "[cElasticsearch]ElasticInstall"
         }
-
-
+  
+  
         c7zip NSSMExtractForKibana
         {
             ZipFileLocation = $nssmZipLocation
             UnzipFolder = $nssmUnpackLocation
             DependsOn = "[xRemoteFile]NSSMDownloadZip"
         }
-
+  
         xRemoteFile KibanaDownloadZip
         {
             DestinationPath = $kibanaZipLocation
@@ -115,7 +115,7 @@ configuration TestConfig
             UserAgent = "DSCScript"
             DependsOn = "[cElasticsearch]ElasticInstall"
         }
-
+  
         c7zip KibanaUnzip
         {
             DependsOn = "[xRemoteFile]KibanaDownloadZip"
@@ -125,7 +125,7 @@ configuration TestConfig
 
         cKibana KibanaInstall
         {
-            DependsOn = @('[c7zip]KibanaUnzip', '[c7zip]NSSMExtractForKibana')
+            #DependsOn = @('[c7zip]KibanaUnzip', '[c7zip]NSSMExtractForKibana')
             UnzipFolder = $kibanaUnpacked
             NssmUnzipFolder = $nssmUnpackLocation
         }
