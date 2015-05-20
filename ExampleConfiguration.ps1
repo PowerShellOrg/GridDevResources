@@ -26,7 +26,9 @@ configuration TestConfig
     $nssmDownloadUri = 'https://nssm.cc/release/nssm-2.24.zip'
 
     Import-DscResource -Module xPSDesiredStateConfiguration
-    Import-DscResource -Module cElasticsearch
+    Import-DscResource -Module cGripDevDSC
+    
+    
     node ("localhost")
     {
         LocalConfigurationManager
@@ -50,7 +52,6 @@ configuration TestConfig
         {
             DependsOn = "[xRemoteFile]JREDownload"
             ZipFileLocation = $javaZipLocation
-            #ZipFileLocation = $nssmZipLocation
             UnzipFolder = $javaUnpackLocation
         }
   
@@ -89,7 +90,8 @@ configuration TestConfig
   
         
         #####
-        #Downlaod and Install Kibana, using nssm to host as windows service
+        # Downlaod and Install Kibana, using nssm to host as windows service
+        # Default Port: 5601
         #####
   
         xRemoteFile NSSMDownloadZip

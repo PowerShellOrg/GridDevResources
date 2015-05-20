@@ -46,6 +46,18 @@ function Set-TargetResource
     cd $serviceBatLoction.Directory.FullName
   }
 
+  #refresh Environment variables, as these are loaded on ps enviroment start so may not include recent additions, like the JDK path. 
+  # --> http://stackoverflow.com/questions/14381650/how-to-update-windows-powershell-session-environment-variables-from-registry
+  foreach($level in "Machine","User") {
+     [Environment]::GetEnvironmentVariables($level).GetEnumerator() | % {
+        # For Path variables, append the new values, if they're not already in there
+        if($_.Name -match 'Path$') { 
+           $_.Value = ($((Get-Content "Env:$($_.Name)") + ";$($_.Value)") -split ';' | Select -unique) -join ';'
+        }
+        $_
+     } | Set-Content -Path { "Env:$($_.Name)" }
+  }
+
   #Run installer logging out to verbosse
   $logFilePath = Join-Path $UnzipFolder "InstallLog.txt"
   Start-Process $serviceBatLoction.FullName "install" -RedirectStandardOutput $logFilePath -Wait
