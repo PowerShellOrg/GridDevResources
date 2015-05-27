@@ -1,6 +1,0 @@
-[ClassVersion("1.0.1"), FriendlyName("cKibana")]
-class cKibana : OMI_BaseResource
-{
-  [Key] string UnzipFolder;
-  [required] string NssmUnzipFolder;
-};

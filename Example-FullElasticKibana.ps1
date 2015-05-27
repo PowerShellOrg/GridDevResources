@@ -122,11 +122,13 @@ configuration TestConfig
             UnzipFolder = $kibanaUnpacked
         }
 
-        cKibana KibanaInstall
+        cNssm KibanaInstall
         {
-            #DependsOn = @('[c7zip]KibanaUnzip', '[c7zip]NSSMExtractForKibana')
-            UnzipFolder = $kibanaUnpacked
-            NssmUnzipFolder = $nssmUnpackLocation
+            DependsOn = @('[c7zip]KibanaUnzip', '[c7zip]NSSMExtractForKibana')          
+            ExeFolder = $kibanaUnpacked
+            NssmFolder = $nssmUnpackLocation
+            ServiceName = 'KibanaNSSM'
+            ExeOrBatName = 'kibana.bat'
         }
     }
 }

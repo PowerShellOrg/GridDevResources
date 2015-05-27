@@ -7,12 +7,19 @@ function Get-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder,
+    $ExeFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $NssmUnzipFolder
-
+    $ExeOrBatName,
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $NssmFolder, 
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $ServiceName
   )
 
   Write-Verbose "Start Get-TargetResource"
@@ -20,8 +27,10 @@ function Get-TargetResource
   #Needs to return a hashtable that returns the current
   #status of the configuration component
   $Configuration = @{
-    UnzipFolder = $UnzipFolder
-    NssmUnzipFolder = $NssmUnzipFolder
+    ExeFolder = $ExeFolder
+    ExeOrBatName = $ExeOrBatName
+    NssmFolder = $NssmFolder
+    ServiceName = $ServiceName
   }
 
   return $Configuration
@@ -35,23 +44,28 @@ function Set-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder,
+    $ExeFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $NssmUnzipFolder
+    $ExeOrBatName,
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $NssmFolder, 
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $ServiceName
   )
 
   Write-Verbose "Start Set-TargetResource"
 
-  #Name of Service
-  $kibanaServiceName = "KibanaNSSM"
-
-  #Find the Bat file the runs kibana
-  $serviceBatLoction = Get-ChildItem -Path $UnzipFolder -Filter kibana.bat -Recurse | Select -first 1
+  #Find the bat or exe to run as a service
+  $serviceBatLoction = Get-ChildItem -Path $ExeFolder -Filter $ExeOrBatName -Recurse | Select -first 1
 
   #Get the non-sucky-service-manager exe
-  $nssmExeLoction = Get-ChildItem -Path $NssmUnzipFolder -Filter nssm.exe -Recurse | ?{ $_.Directory.Name-eq "win64"}
+  $nssmExeLoction = Get-ChildItem -Path $NssmFolder -Filter nssm.exe -Recurse | ?{ $_.Directory.Name-eq "win64"}
 
   if ($nssmExeLoction.Count -ne 1)
   {
@@ -59,15 +73,15 @@ function Set-TargetResource
   }
 
   #Check we're not already installed
-  $serviceObject = get-service | ?{$_.Name -like "*$kibanaServiceName*"}
+  $serviceObject = get-service | ?{$_.Name -like "*$ServiceName*"}
   if ($serviceObject)
   {
     #Stop the currently installed service
     $serviceObject.Stop()
 
     #Remove if we are
-    $logRemoveFilePath = Join-Path $UnzipFolder "RemoveLog.txt"
-    $removeArgs = "remove $kibanaServiceName confirm"
+    $logRemoveFilePath = Join-Path $ExeFolder "RemoveLog.txt"
+    $removeArgs = "remove $ServiceName confirm"
     Start-Process $nssmExeLoction.FullName $removeArgs -RedirectStandardOutput $logRemoveFilePath -Wait
 
     #Wait for intall as service manager can be nice and laggy
@@ -76,16 +90,16 @@ function Set-TargetResource
 
 
 
-  #Create a service, using nssm, to host kibana
-  $logFilePath = Join-Path $UnzipFolder "InstallLog.txt"
-  $installArgs = "install $kibanaServiceName $($serviceBatLoction.FullName)"
+  #Create a service, using nssm, to host the exe or bat
+  $logFilePath = Join-Path $ExeFolder "InstallLog.txt"
+  $installArgs = "install $ServiceName $($serviceBatLoction.FullName)"
   Start-Process $nssmExeLoction.FullName $installArgs -RedirectStandardOutput $logFilePath -Wait
 
 
   #Wait for intall
   Start-Sleep -s 2
 
-  $serviceObject = get-service | ?{$_.Name -like "*KibanaNSSM*"}
+  $serviceObject = get-service | ?{$_.Name -eq $ServiceName}
 
   #Check the service appeared
   if ($serviceObject.Count -ne 1)
@@ -116,18 +130,28 @@ function Test-TargetResource
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $UnzipFolder,
+    $ExeFolder,
     [parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [System.String]
-    $NssmUnzipFolder
+    $ExeOrBatName,
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $NssmFolder, 
+    [parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [System.String]
+    $ServiceName
   )
 
   Write-Verbose "Start Test-TargetResource"
 
-  $serviceObject = get-service | ?{$_.Name -like "*$kibanaServiceName*"}
+  Write-Verbose "Looking for service with name $ServiceName"
 
-  if ($serviceObject)
+  $serviceObject = get-service | ?{$_.Name -eq $ServiceName}
+
+  if ($serviceObject.Count -ne 1)
   {
     Write-Verbose "Service not present on machine"
     Return $false
