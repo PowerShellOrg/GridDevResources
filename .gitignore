@@ -43,3 +43,4 @@ Temporary Items
 .apdisk
 *.zip
 *.mof
+!*.schema.mof
