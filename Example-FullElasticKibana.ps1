@@ -17,9 +17,8 @@ configuration TestConfig
 
     $javaZipLocation = Join-Path $downloadroot 'jre.tar.gz'
     $javaUnpackLocation = Join-Path $installRoot 'jre'
-    $javaFolder =  Join-Path $javaUnpackLocation 'jdk1.8.0_40'
-    #$javaDownloadUri = 'http://download.processing.org/java/jre-8u31-windows-x64.tar.gz' #Using mirror as Oracle don't allow unattended downloads
-    $javaDownloadUri = 'http://www-lry.ciril.net/client/java/server-jre-8u40-windows-x64.tar.gz'
+    $javaFolder =  Join-Path $javaUnpackLocation 'jdk1.8.0_45'
+    $javaDownloadUri = '"http://download.oracle.com/otn-pub/java/jdk/8u45-b15/server-jre-8u45-windows-x64.tar.gz"'
 
     $nssmZipLocation = Join-Path $downloadroot 'nssm.zip'
     $nssmUnpackLocation = Join-Path $installRoot 'nssmkibana'
@@ -40,17 +39,18 @@ configuration TestConfig
         #Downlaod and set env variable for JRE
         #####
   
-        xRemoteFile JREDownload
+        cSimpleDownloader JREDownload
         {
             DestinationPath = $javaZipLocation
-            Uri = $javaDownloadUri
-            UserAgent = "DSCScript"
-            
+            RemoteFileLocation = $javaDownloadUri
+            CookieName = "oraclelicense"
+    		CookieValue = "accept-securebackup-cookie"
+    		CookieDomain = ".oracle.com"        
         }
   
         c7zip JREUnzip
         {
-            DependsOn = "[xRemoteFile]JREDownload"
+            DependsOn = "[cSimpleDownloader]JREDownload"
             ZipFileLocation = $javaZipLocation
             UnzipFolder = $javaUnpackLocation
         }
@@ -68,16 +68,15 @@ configuration TestConfig
         #Download and install elasticsearch
         #####
   
-        xRemoteFile ElasticDownloadZip
+        cSimpleDownloader ElasticDownloadZip
         {
             DestinationPath = $elasticZipLocation
-            Uri = $elasticDownloadUri
-            UserAgent = "DSCScript"
+            RemoteFileLocation = $elasticDownloadUri
         }
   
         c7zip ElasticUnzip
         {
-            DependsOn = "[xRemoteFile]ElasticDownloadZip"
+            DependsOn = "[cSimpleDownloader]ElasticDownloadZip"
             ZipFileLocation = $elasticZipLocation
             UnzipFolder = $elasticUnpacked
         }
@@ -94,11 +93,10 @@ configuration TestConfig
         # Default Port: 5601
         #####
   
-        xRemoteFile NSSMDownloadZip
+        cSimpleDownloader NSSMDownloadZip
         {
             DestinationPath = $nssmZipLocation
-            Uri = $nssmDownloadUri
-            UserAgent = 'DSC Script'
+            RemoteFileLocation = $nssmDownloadUri
             DependsOn = "[cElasticsearch]ElasticInstall"
         }
   
@@ -107,20 +105,19 @@ configuration TestConfig
         {
             ZipFileLocation = $nssmZipLocation
             UnzipFolder = $nssmUnpackLocation
-            DependsOn = "[xRemoteFile]NSSMDownloadZip"
+            DependsOn = "[cSimpleDownloader]NSSMDownloadZip"
         }
   
-        xRemoteFile KibanaDownloadZip
+        cSimpleDownloader KibanaDownloadZip
         {
             DestinationPath = $kibanaZipLocation
-            Uri = $kibanaDownloadUri
-            UserAgent = "DSCScript"
+            RemoteFileLocation = $kibanaDownloadUri
             DependsOn = "[cElasticsearch]ElasticInstall"
         }
   
         c7zip KibanaUnzip
         {
-            DependsOn = "[xRemoteFile]KibanaDownloadZip"
+            DependsOn = "[cSimpleDownloader]KibanaDownloadZip"
             ZipFileLocation = $kibanaZipLocation
             UnzipFolder = $kibanaUnpacked
         }

@@ -51,7 +51,7 @@ function Set-TargetResource
   )
   
   Write-Verbose "Start Set-TargetResource"
-  Write-Verbose "Downloading  $RemoteFileLocation to $DownloadFolder with name $FileName"
+  Write-Verbose "Downloading  $RemoteFileLocation to $DestinationPath"
 
 
   $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
@@ -63,6 +63,13 @@ function Set-TargetResource
     $cookie.Value = $CookieValue
     $cookie.Domain = $CookieDomain
     $session.Cookies.Add($cookie);
+  }
+  
+  $containingFile = Split-Path $DestinationPath 
+  
+  if (-not (Test-Path $containingFile))
+  {
+    New-Item -ItemType directory -Force -Path $containingFile
   }
 
   Invoke-WebRequest $RemoteFileLocation -WebSession $session -TimeoutSec 900 -OutFile $DestinationPath

@@ -11,9 +11,8 @@ configuration cDownloadConfig
 		
 		cSimpleDownloader DownloadBingHomepage
 		{
-			#RemoteFileLocation = "http://download.oracle.com/otn-pub/java/jdk/8u45-b15/server-jre-8u45-windows-x64.tar.gz"
-			RemoteFileLocation = "http://bing.com"
-  			DestinationPath = "c:\temp\jre.tar.gz"
+			RemoteFileLocation = "http://download.oracle.com/otn-pub/java/jdk/8u45-b15/server-jre-8u45-windows-x64.tar.gz"
+  			DestinationPath = "c:\temp2\jre.tar.gz"
 			CookieName = "oraclelicense"
     		CookieValue = "accept-securebackup-cookie"
     		CookieDomain = ".oracle.com"
