@@ -18,7 +18,7 @@ configuration TestConfig
     $javaZipLocation = Join-Path $downloadroot 'jre.tar.gz'
     $javaUnpackLocation = Join-Path $installRoot 'jre'
     $javaFolder =  Join-Path $javaUnpackLocation 'jdk1.8.0_45'
-    $javaDownloadUri = '"http://download.oracle.com/otn-pub/java/jdk/8u45-b15/server-jre-8u45-windows-x64.tar.gz"'
+    $javaDownloadUri = 'http://download.oracle.com/otn-pub/java/jdk/8u45-b15/server-jre-8u45-windows-x64.tar.gz'
 
     $nssmZipLocation = Join-Path $downloadroot 'nssm.zip'
     $nssmUnpackLocation = Join-Path $installRoot 'nssmkibana'
