@@ -24,7 +24,6 @@ configuration TestConfig
     $nssmUnpackLocation = Join-Path $installRoot 'nssmkibana'
     $nssmDownloadUri = 'https://nssm.cc/release/nssm-2.24.zip'
 
-    Import-DscResource -Module xPSDesiredStateConfiguration
     Import-DscResource -Module cGripDevDSC
     
     
